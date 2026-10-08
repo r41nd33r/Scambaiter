@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scambaiter</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span class="logo">🎣</span>
+      <div>
+        <h1>Scambaiter</h1>
+        <p class="tag">Wasting scammers' time so they can't spend it on real victims.</p>
+      </div>
+    </div>
+    <span id="mode" class="pill"></span>
+  </header>
+
+  <section class="stats">
+    <div class="stat"><span id="s-min">0</span><label>est. scammer minutes wasted</label></div>
+    <div class="stat"><span id="s-threads">0</span><label>scams engaged</label></div>
+    <div class="stat"><span id="s-msgs">0</span><label>scammer replies baited</label></div>
+    <div class="stat"><span id="s-pay">0</span><label>payment destinations captured</label></div>
+    <div class="stat"><span id="s-intel">0</span><label>intel items</label></div>
+  </section>
+
+  <main>
+    <aside class="threads">
+      <div class="aside-head">
+        <h2>Threads</h2>
+        <button id="new-btn" class="primary">+ New scam</button>
+      </div>
+      <ul id="thread-list"></ul>
+    </aside>
+
+    <section class="convo">
+      <div id="empty" class="empty">
+        <h2>Start a conversation</h2>
+        <p>Paste a scam you received, or run a demo against the simulated scammer.</p>
+        <div id="demo-buttons" class="demo-buttons"></div>
+      </div>
+      <div id="convo-view" hidden>
+        <div class="convo-head">
+          <div>
+            <h2 id="c-subject"></h2>
+            <p id="c-meta" class="muted"></p>
+          </div>
+          <div class="actions">
+            <button id="sim-btn">▶ Simulate scammer turn</button>
+            <button id="auto-btn">⏩ Auto-run 4 turns</button>
+            <button id="approve-btn" class="primary" hidden>Approve &amp; engage</button>
+            <button id="report-btn">📄 Report</button>
+            <button id="stop-btn" class="danger">Stop</button>
+          </div>
+        </div>
+        <div id="messages" class="messages"></div>
+        <form id="reply-form" class="reply-form">
+          <textarea id="reply-input" rows="3" placeholder="Paste the scammer's latest reply here…"></textarea>
+          <button class="primary" type="submit">Add scammer reply</button>
+        </form>
+      </div>
+    </section>
+
+    <aside class="side">
+      <div class="card">
+        <h3>Why it was flagged</h3>
+        <div id="score"></div>
+        <ul id="reasons" class="reasons"></ul>
+      </div>
+      <div class="card">
+        <h3>Intel collected</h3>
+        <ul id="intel" class="intel"><li class="muted">Nothing yet</li></ul>
+      </div>
+    </aside>
+  </main>
+
+  <dialog id="new-dialog">
+    <form id="new-form" method="dialog">
+      <h2>Paste a scam you received</h2>
+      <label>From <input id="n-sender" placeholder="scammer@example.com"></label>
+      <label>Subject <input id="n-subject"></label>
+      <label>Message <textarea id="n-body" rows="8" required></textarea></label>
+      <p class="muted small">Only forward messages to Scambaiter from a burner address that isn't linked to you.</p>
+      <div class="dialog-actions">
+        <button type="button" id="n-cancel">Cancel</button>
+        <button class="primary" type="submit">Analyze &amp; engage</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="report-dialog">
+    <h2>Report</h2>
+    <pre id="report-text"></pre>
+    <div class="dialog-actions">
+      <button id="copy-report">Copy</button>
+      <button id="close-report" class="primary">Close</button>
+    </div>
+  </dialog>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
