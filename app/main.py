@@ -20,6 +20,12 @@ async def poll_inbox():
     while True:
         try:
             for mail in await asyncio.to_thread(inbox.fetch_new):
+                sender = mail["sender"].lower()
+                # Never answer automated mail (account alerts, bounces) or ourselves.
+                if any(s in sender for s in ("no-reply", "noreply", "mailer-daemon", "postmaster")) \
+                        or sender == config.IMAP_USER.lower():
+                    log.info("skipped automated mail from %s", sender)
+                    continue
                 thread_id, reply = await asyncio.to_thread(
                     service.handle_inbound, mail["sender"], mail["subject"], mail["body"], "imap")
                 if reply:

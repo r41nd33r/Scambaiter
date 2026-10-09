@@ -7,12 +7,15 @@ import email
 import imaplib
 import logging
 import smtplib
+from email.header import decode_header, make_header
 from email.message import EmailMessage
 from email.utils import parseaddr
 
 from . import config
 
 log = logging.getLogger(__name__)
+# Highest IMAP UID already handled, so read/unread state in Gmail doesn't matter.
+UID_FILE = config.DB_PATH.parent / "last_uid.txt"
 
 
 def _text_body(msg: email.message.Message) -> str:
@@ -25,22 +28,42 @@ def _text_body(msg: email.message.Message) -> str:
 
 
 def fetch_new() -> list[dict]:
-    """Returns unread messages as {sender, subject, body, message_id} and marks them read."""
+    """Returns messages that arrived since the last poll as {sender, subject, body, message_id}."""
     out = []
     with imaplib.IMAP4_SSL(config.IMAP_HOST) as imap:
         imap.login(config.IMAP_USER, config.IMAP_PASSWORD)
         imap.select("INBOX")
-        _, data = imap.search(None, "UNSEEN")
-        for num in data[0].split():
-            _, raw = imap.fetch(num, "(RFC822)")
+        _, data = imap.uid("search", None, "ALL")
+        uids = [int(u) for u in data[0].split()]
+        last = _last_uid()
+        if last is None:
+            # First run: start from now, don't answer whatever was already sitting in the inbox.
+            _save_uid(max(uids, default=0))
+            return []
+        for uid in (u for u in uids if u > last):
+            # PEEK leaves the message unread in Gmail.
+            _, raw = imap.uid("fetch", str(uid), "(BODY.PEEK[])")
             msg = email.message_from_bytes(raw[0][1])
             out.append({
                 "sender": parseaddr(msg.get("From", ""))[1],
-                "subject": msg.get("Subject", ""),
+                "subject": str(make_header(decode_header(msg.get("Subject", "")))),
                 "body": _text_body(msg),
                 "message_id": msg.get("Message-ID", ""),
             })
+            _save_uid(uid)
     return out
+
+
+def _last_uid() -> int | None:
+    try:
+        return int(UID_FILE.read_text().strip())
+    except (FileNotFoundError, ValueError):
+        return None
+
+
+def _save_uid(uid: int):
+    UID_FILE.parent.mkdir(parents=True, exist_ok=True)
+    UID_FILE.write_text(str(uid))
 
 
 def send(to: str, subject: str, body: str, in_reply_to: str = ""):
