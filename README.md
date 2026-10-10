@@ -2,10 +2,9 @@
 
 **An AI agent that wastes scammers' time so they can't spend it on real victims, and collects the intel needed to shut them down.**
 
-*ForgeHacks 2026 · AI + Cybersecurity track*
 
 ## The problem
-AI has made scams cheap to run at scale: one scammer can send thousands of convincing, personalized messages. Most defenses only **block** messages, which costs the scammer nothing; they just move on to the next target. In 2024 the FTC recorded over $12.5B in reported fraud losses, and older adults lose the most per victim.
+AI has made scams cheap to run at scale: one scammer can send thousands of convincing, personalized messages. Most defenses only block messages, which costs the scammer nothing; they just move on to the next target. In 2024 the FTC recorded over $12.5B in reported fraud losses, and older adults lose the most per victim.
 
 ## The solution
 When you get a scam, forward it to Scambaiter. It:
